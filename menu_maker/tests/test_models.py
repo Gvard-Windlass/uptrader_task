@@ -12,3 +12,9 @@ class TestMenuItemModel(TestCase):
     def test_get_menu_items(self):
         items = MenuItem.objects.all()
         self.assertEqual(len(items), 11)
+
+    def test_get_descendants(self):
+        items = MenuItem.objects.get_descendants(3)
+        self.assertEqual(len(items), 5)
+        items = MenuItem.objects.get_descendants(3, direct_only=True)
+        self.assertEqual(len(items), 3)

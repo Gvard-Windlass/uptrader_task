@@ -13,10 +13,23 @@ class MenuAdmin(admin.ModelAdmin):
     def save_model(self, request: Any, obj: MenuItem, form: Any, change: Any) -> None:
         if not obj.id:  # create
             if obj.parent:  # new node
-                pass
+                descendants = MenuItem.objects.get_descendants(
+                    obj.parent.id, direct_only=True
+                )
+                # TODO make dynamic
+                position = len(descendants)
+
+                if position == 0 or not descendants:
+                    boundary = obj.parent.lft
+                else:
+                    boundary = descendants[position - 1].rgt
+
+                MenuItem.objects.filter(lft__gt=boundary).update(lft=F("lft") + 2)
+                MenuItem.objects.filter(rgt__gt=boundary).update(rgt=F("rgt") + 2)
             else:  # new root
-                max_rgt = MenuItem.objects.aggregate(Max("rgt"))["rgt__max"] or 0
-                obj.lft = max_rgt + 1
-                obj.rgt = max_rgt + 2
+                boundary = MenuItem.objects.aggregate(Max("rgt"))["rgt__max"] or 0
+
+            obj.lft = boundary + 1
+            obj.rgt = boundary + 2
 
         return super().save_model(request, obj, form, change)

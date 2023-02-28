@@ -1,5 +1,17 @@
 from django.db import models
 from django.db.models import CheckConstraint, Q, F
+from django.shortcuts import get_object_or_404
+
+
+class MenuManager(models.Manager):
+    def get_descendants(self, id: int, direct_only: bool = False):
+        top = get_object_or_404(MenuItem, id=id)
+        if direct_only:
+            return self.filter(
+                lft__range=(top.lft + 1, top.rgt - 1), parent=top
+            ).order_by("lft")
+        else:
+            return self.filter(lft__range=(top.lft + 1, top.rgt - 1)).order_by("lft")
 
 
 class MenuItem(models.Model):
@@ -9,6 +21,7 @@ class MenuItem(models.Model):
     lft = models.PositiveIntegerField(null=False)
     rgt = models.PositiveIntegerField(null=False)
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
+    objects = MenuManager()
 
     class Meta:
         constraints = [
