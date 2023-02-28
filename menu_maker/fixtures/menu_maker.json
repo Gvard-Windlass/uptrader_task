@@ -1,0 +1,112 @@
+[
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 1,
+        "fields": {
+            "name": "Clothing",
+            "lft": 1,
+            "rgt": 22,
+            "parent": null
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 2,
+        "fields": {
+            "name": "Men's",
+            "lft": 2,
+            "rgt": 9,
+            "parent": 1
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 3,
+        "fields": {
+            "name": "Women's",
+            "lft": 10,
+            "rgt": 21,
+            "parent": 1
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 4,
+        "fields": {
+            "name": "Suits",
+            "lft": 3,
+            "rgt": 8,
+            "parent": 2
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 5,
+        "fields": {
+            "name": "Slacks",
+            "lft": 4,
+            "rgt": 5,
+            "parent": 4
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 6,
+        "fields": {
+            "name": "Jackets",
+            "lft": 6,
+            "rgt": 7,
+            "parent": 4
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 7,
+        "fields": {
+            "name": "Dresses",
+            "lft": 11,
+            "rgt": 16,
+            "parent": 3
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 8,
+        "fields": {
+            "name": "Skirts",
+            "lft": 17,
+            "rgt": 18,
+            "parent": 3
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 9,
+        "fields": {
+            "name": "Blouses",
+            "lft": 19,
+            "rgt": 20,
+            "parent": 3
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 10,
+        "fields": {
+            "name": "Evening Gowns",
+            "lft": 12,
+            "rgt": 13,
+            "parent": 7
+        }
+    },
+    {
+        "model": "menu_maker.menuitem",
+        "pk": 11,
+        "fields": {
+            "name": "Sun Dresses",
+            "lft": 14,
+            "rgt": 15,
+            "parent": 7
+        }
+    }
+]
