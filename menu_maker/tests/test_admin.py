@@ -7,6 +7,9 @@ from menu_maker.admin import MenuAdmin
 class TestMenuAdminModelWithFixtures(TestCase):
     fixtures = ["menu_maker.json"]
 
+    def _get_tree_values(self):
+        return MenuItem.objects.order_by("id").values_list("name", "lft", "rgt")
+
     def setUp(self) -> None:
         self.admin_model = MenuAdmin(model=MenuItem, admin_site=AdminSite())
 
@@ -14,24 +17,46 @@ class TestMenuAdminModelWithFixtures(TestCase):
         new_root = MenuItem(name="new root", lft=0, rgt=0)
         self.admin_model.save_model(obj=new_root, request=None, form=None, change=None)
 
-        self.assertEqual(new_root.lft, 23)
-        self.assertEqual(new_root.rgt, 24)
+        actual_values = self._get_tree_values()
+        expected_values = [
+            ("Clothing", 1, 22),
+            ("Men's", 2, 9),
+            ("Women's", 10, 21),
+            ("Suits", 3, 8),
+            ("Slacks", 4, 5),
+            ("Jackets", 6, 7),
+            ("Dresses", 11, 16),
+            ("Skirts", 17, 18),
+            ("Blouses", 19, 20),
+            ("Evening Gowns", 12, 13),
+            ("Sun Dresses", 14, 15),
+            ("new root", 23, 24),
+        ]
+
+        self.assertCountEqual(actual_values, expected_values)
 
     def test_add_child_item(self):
         parent_node = MenuItem.objects.get(id=3)
         new_node = MenuItem(name="new item", lft=0, rgt=0, parent=parent_node)
         self.admin_model.save_model(obj=new_node, request=None, form=None, change=None)
 
-        self.assertEqual(new_node.lft, 21)
-        self.assertEqual(new_node.rgt, 22)
+        actual_values = self._get_tree_values()
+        expected_values = [
+            ("Clothing", 1, 24),
+            ("Men's", 2, 9),
+            ("Women's", 10, 23),
+            ("Suits", 3, 8),
+            ("Slacks", 4, 5),
+            ("Jackets", 6, 7),
+            ("Dresses", 11, 16),
+            ("Skirts", 17, 18),
+            ("Blouses", 19, 20),
+            ("Evening Gowns", 12, 13),
+            ("Sun Dresses", 14, 15),
+            ("new item", 21, 22),
+        ]
 
-        parent_node.refresh_from_db()
-        self.assertEqual(parent_node.lft, 10)
-        self.assertEqual(parent_node.rgt, 23)
-
-        root_node = MenuItem.objects.get(id=1)
-        self.assertEqual(root_node.lft, 1)
-        self.assertEqual(root_node.rgt, 24)
+        self.assertCountEqual(actual_values, expected_values)
 
     def test_move_item(self):
         new_parent = MenuItem.objects.get(id=2)
@@ -39,21 +64,22 @@ class TestMenuAdminModelWithFixtures(TestCase):
         node.parent = new_parent
         self.admin_model.save_model(obj=node, request=None, form=None, change=None)
 
-        node.refresh_from_db()
-        self.assertEqual(node.lft, 9)
-        self.assertEqual(node.rgt, 14)
+        actual_values = self._get_tree_values()
+        expected_values = [
+            ("Clothing", 1, 22),
+            ("Men's", 2, 15),
+            ("Women's", 16, 21),
+            ("Suits", 3, 8),
+            ("Slacks", 4, 5),
+            ("Jackets", 6, 7),
+            ("Dresses", 9, 14),
+            ("Skirts", 17, 18),
+            ("Blouses", 19, 20),
+            ("Evening Gowns", 10, 11),
+            ("Sun Dresses", 12, 13),
+        ]
 
-        new_parent.refresh_from_db()
-        self.assertEqual(new_parent.lft, 2)
-        self.assertEqual(new_parent.rgt, 15)
-
-        old_parent = MenuItem.objects.get(id=3)
-        self.assertEqual(old_parent.lft, 16)
-        self.assertEqual(old_parent.rgt, 21)
-
-        root_node = MenuItem.objects.get(id=1)
-        self.assertEqual(root_node.lft, 1)
-        self.assertEqual(root_node.rgt, 22)
+        self.assertCountEqual(actual_values, expected_values)
 
 
 class TestMenuAdminModel(TestCase):
