@@ -18,3 +18,7 @@ class TestMenuItemModel(TestCase):
         self.assertEqual(len(items), 5)
         items = MenuItem.objects.get_descendants(3, direct_only=True)
         self.assertEqual(len(items), 3)
+
+    def test_get_tree(self):
+        items = MenuItem.objects.get_tree_by_id(7)
+        self.assertEqual(len(items), 3)

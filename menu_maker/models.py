@@ -4,6 +4,10 @@ from django.shortcuts import get_object_or_404
 
 
 class MenuManager(models.Manager):
+    def get_tree_by_id(self, root_id: int):
+        root = get_object_or_404(MenuItem, id=root_id)
+        return self.filter(lft__range=(root.lft, root.rgt)).order_by("lft")
+
     def get_descendants(self, id: int, direct_only: bool = False):
         top = get_object_or_404(MenuItem, id=id)
         if direct_only:

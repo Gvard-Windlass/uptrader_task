@@ -33,6 +33,28 @@ class TestMenuAdminModelWithFixtures(TestCase):
         self.assertEqual(root_node.lft, 1)
         self.assertEqual(root_node.rgt, 24)
 
+    def test_move_item(self):
+        new_parent = MenuItem.objects.get(id=2)
+        node = MenuItem.objects.get(id=7)
+        node.parent = new_parent
+        self.admin_model.save_model(obj=node, request=None, form=None, change=None)
+
+        node.refresh_from_db()
+        self.assertEqual(node.lft, 9)
+        self.assertEqual(node.rgt, 14)
+
+        new_parent.refresh_from_db()
+        self.assertEqual(new_parent.lft, 2)
+        self.assertEqual(new_parent.rgt, 15)
+
+        old_parent = MenuItem.objects.get(id=3)
+        self.assertEqual(old_parent.lft, 16)
+        self.assertEqual(old_parent.rgt, 21)
+
+        root_node = MenuItem.objects.get(id=1)
+        self.assertEqual(root_node.lft, 1)
+        self.assertEqual(root_node.rgt, 22)
+
 
 class TestMenuAdminModel(TestCase):
     def setUp(self) -> None:
