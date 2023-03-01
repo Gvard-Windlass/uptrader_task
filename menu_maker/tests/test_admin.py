@@ -36,7 +36,7 @@ class TestMenuAdminModelWithFixtures(TestCase):
         self.assertCountEqual(actual_values, expected_values)
 
     def test_add_child_item(self):
-        parent_node = MenuItem.objects.get(id=3)
+        parent_node = MenuItem.objects.get(name="Women's")
         new_node = MenuItem(name="new item", lft=0, rgt=0, parent=parent_node)
         self.admin_model.save_model(obj=new_node, request=None, form=None, change=None)
 
@@ -59,8 +59,8 @@ class TestMenuAdminModelWithFixtures(TestCase):
         self.assertCountEqual(actual_values, expected_values)
 
     def test_move_item(self):
-        new_parent = MenuItem.objects.get(id=2)
-        node = MenuItem.objects.get(id=7)
+        new_parent = MenuItem.objects.get(name="Men's")
+        node = MenuItem.objects.get(name="Dresses")
         node.parent = new_parent
         self.admin_model.save_model(obj=node, request=None, form=None, change=None)
 
