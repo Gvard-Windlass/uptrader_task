@@ -36,7 +36,7 @@ class MenuAdmin(admin.ModelAdmin):
             # move node under new parent if changed
             if obj.parent_id != MenuItem.objects.get(pk=obj.id).parent_id:
                 tree_ids = list(
-                    MenuItem.objects.get_tree_by_id(obj.id).values_list("id", flat=True)
+                    MenuItem.objects.get_tree(obj.id).values_list("id", flat=True)
                 )
 
                 # update previous obj place

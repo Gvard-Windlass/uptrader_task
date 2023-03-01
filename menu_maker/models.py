@@ -1,11 +1,25 @@
+from typing import Union
 from django.db import models
 from django.db.models import CheckConstraint, Q, F
 from django.shortcuts import get_object_or_404
 
 
 class MenuManager(models.Manager):
-    def get_tree_by_id(self, root_id: int):
-        root = get_object_or_404(MenuItem, id=root_id)
+    def get_tree(self, root: Union[int, str]):
+        """retrives tree with root and all descendants
+        Args:
+            root (Union[int, str]): id or name of root node
+        """
+        if type(root) == int:
+            q = Q(id=root)
+        elif type(root) == str:
+            q = Q(name=root)
+        else:
+            raise TypeError(
+                "root argument should be either int for id or str for name lookup"
+            )
+
+        root = get_object_or_404(MenuItem, q)
         return self.filter(lft__range=(root.lft, root.rgt)).order_by("lft")
 
     def get_descendants(self, id: int, direct_only: bool = False):

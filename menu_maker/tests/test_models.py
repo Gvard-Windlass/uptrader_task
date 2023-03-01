@@ -20,5 +20,8 @@ class TestMenuItemModel(TestCase):
         self.assertEqual(len(items), 3)
 
     def test_get_tree(self):
-        items = MenuItem.objects.get_tree_by_id(7)
-        self.assertEqual(len(items), 3)
+        items_by_id = MenuItem.objects.get_tree(7)
+        items_by_name = MenuItem.objects.get_tree("Dresses")
+        self.assertEqual(len(items_by_id), 3)
+        self.assertEqual(len(items_by_name), 3)
+        self.assertRaises(TypeError, MenuItem.objects.get_tree, [])
