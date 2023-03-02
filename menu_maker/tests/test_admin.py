@@ -171,6 +171,36 @@ class TestMenuAdminModelWithFixtures(TestCase):
         self.assertCountEqual(actual_values, expected_values)
         self.assertEqual(node.get_position(), (1, 2))
 
+    def test_change_siblings_order(self):
+        node = MenuItem.objects.get(name="Dresses")
+        form_data = {
+            "name": node.name,
+            "parent": node.parent_id,
+            "position": -1,
+        }
+        form = MenuItemForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+        self.admin_model.save_model(obj=node, request=None, form=form, change=None)
+
+        actual_values = self._get_tree_values()
+        expected_values = [
+            ("Clothing", 1, 22),
+            ("Men's", 2, 9),
+            ("Women's", 10, 21),
+            ("Suits", 3, 8),
+            ("Slacks", 4, 5),
+            ("Jackets", 6, 7),
+            ("Dresses", 15, 20),
+            ("Skirts", 11, 12),
+            ("Blouses", 13, 14),
+            ("Evening Gowns", 16, 17),
+            ("Sun Dresses", 18, 19),
+        ]
+
+        self.assertCountEqual(actual_values, expected_values)
+        self.assertEqual(node.get_position(), (3, 3))
+
 
 class TestMenuAdminModel(TestCase):
     def setUp(self) -> None:

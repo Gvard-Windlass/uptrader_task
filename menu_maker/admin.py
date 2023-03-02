@@ -47,8 +47,10 @@ class MenuAdmin(admin.ModelAdmin):
             obj.lft = boundary + 1
             obj.rgt = boundary + 2
         else:  # update
+            old_obj = MenuItem.objects.get(id=obj.id)
+            old_pos = old_obj.get_position()
             # move node under new parent if changed
-            if obj.parent_id != MenuItem.objects.get(pk=obj.id).parent_id:
+            if obj.parent_id != old_obj.parent_id or old_pos and old_pos[0] != position:
                 tree_ids = list(
                     MenuItem.objects.get_tree(obj.id).values_list("id", flat=True)
                 )
