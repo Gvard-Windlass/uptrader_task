@@ -15,6 +15,11 @@ class MenuItemForm(forms.ModelForm):
         if position:
             self.fields["position"].initial = position[0] - 1
 
+    def save(self, commit: bool = True):
+        input_pos = self.cleaned_data["position"]
+        self.instance.set_new_position(input_pos)
+        return super().save(commit)
+
     class Meta:
         model = MenuItem
         exclude = ["lft", "rgt"]
