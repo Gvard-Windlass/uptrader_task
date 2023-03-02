@@ -201,6 +201,56 @@ class TestMenuAdminModelWithFixtures(TestCase):
         self.assertCountEqual(actual_values, expected_values)
         self.assertEqual(node.get_position(), (3, 3))
 
+    def test_delete_model(self):
+        node = MenuItem.objects.get(name="Dresses")
+        self.admin_model.delete_model(request=None, obj=node)
+
+        actual_values = self._get_tree_values()
+        expected_values = [
+            ("Clothing", 1, 16),
+            ("Men's", 2, 9),
+            ("Women's", 10, 15),
+            ("Suits", 3, 8),
+            ("Slacks", 4, 5),
+            ("Jackets", 6, 7),
+            ("Skirts", 11, 12),
+            ("Blouses", 13, 14),
+        ]
+
+        self.assertCountEqual(actual_values, expected_values)
+
+        node = MenuItem.objects.get(name="Blouses")
+        self.admin_model.delete_model(request=None, obj=node)
+
+        actual_values = self._get_tree_values()
+        expected_values = [
+            ("Clothing", 1, 14),
+            ("Men's", 2, 9),
+            ("Women's", 10, 13),
+            ("Suits", 3, 8),
+            ("Slacks", 4, 5),
+            ("Jackets", 6, 7),
+            ("Skirts", 11, 12),
+        ]
+
+        self.assertCountEqual(actual_values, expected_values)
+
+    def test_delete_selection(self):
+        selection = MenuItem.objects.filter(name__in=["Dresses", "Skirts", "Blouses"])
+        self.admin_model.delete_queryset(request=None, queryset=selection)
+
+        actual_values = self._get_tree_values()
+        expected_values = [
+            ("Clothing", 1, 12),
+            ("Men's", 2, 9),
+            ("Women's", 10, 11),
+            ("Suits", 3, 8),
+            ("Slacks", 4, 5),
+            ("Jackets", 6, 7),
+        ]
+
+        self.assertCountEqual(actual_values, expected_values)
+
 
 class TestMenuAdminModel(TestCase):
     def setUp(self) -> None:

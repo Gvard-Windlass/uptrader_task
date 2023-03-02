@@ -40,6 +40,21 @@ class MenuAdmin(admin.ModelAdmin):
 
         return super().save_model(request, obj, form, change)
 
+    def delete_model(self, request, obj: MenuItem):
+        width = obj.rgt - obj.lft + 1
+        MenuItem.objects.filter(lft__range=(obj.lft, obj.rgt)).delete()
+        MenuItem.objects.filter(lft__gt=obj.rgt).update(lft=F("lft") - width)
+        MenuItem.objects.filter(rgt__gt=obj.rgt).update(rgt=F("rgt") - width)
+
+        return super().delete_model(request, obj)
+
+    def delete_queryset(self, request, queryset):
+        queryset = queryset.order_by("lft")
+        for query in queryset:
+            persists = MenuItem.objects.filter(id=query.id).first()
+            if persists:
+                self.delete_model(request, persists)
+
     def _create_new_child_node(self, obj: MenuItem, position: int):
         descendants = MenuItem.objects.get_descendants(obj.parent_id, direct_only=True)
 
