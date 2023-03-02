@@ -25,8 +25,8 @@ class MenuAdmin(admin.ModelAdmin):
                 else:
                     boundary = descendants[position - 1].rgt
 
-                MenuItem.objects.filter(lft__gt=boundary).update(lft=F("lft") + 2)
                 MenuItem.objects.filter(rgt__gt=boundary).update(rgt=F("rgt") + 2)
+                MenuItem.objects.filter(lft__gt=boundary).update(lft=F("lft") + 2)
             else:  # new root
                 boundary = MenuItem.objects.aggregate(Max("rgt"))["rgt__max"] or 0
 
