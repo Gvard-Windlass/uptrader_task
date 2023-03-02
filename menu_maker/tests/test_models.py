@@ -25,3 +25,11 @@ class TestMenuItemModel(TestCase):
         self.assertEqual(len(items_by_id), 3)
         self.assertEqual(len(items_by_name), 3)
         self.assertRaises(TypeError, MenuItem.objects.get_tree, [])
+
+    def test_get_position(self):
+        root = MenuItem.objects.get(name="Clothing")
+        node1 = MenuItem.objects.get(name="Dresses")
+        node2 = MenuItem.objects.get(name="Blouses")
+        self.assertEqual(root.get_position(), None)
+        self.assertEqual(node1.get_position(), (1, 3))
+        self.assertEqual(node2.get_position(), (3, 3))

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Tuple, Union
 from django.db import models
 from django.db.models import CheckConstraint, Q, F
 from django.shortcuts import get_object_or_404
@@ -40,6 +40,19 @@ class MenuItem(models.Model):
     rgt = models.PositiveIntegerField(null=False)
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
     objects = MenuManager()
+
+    def get_position(self) -> Optional[Tuple[int, int]]:
+        """returns position of this node among siblings and total siblings count, or none if root node"""
+        if self.parent:
+            siblings = list(
+                MenuItem.objects.get_descendants(self.parent_id, True).values_list(
+                    "id", flat=True
+                )
+            )
+            position = siblings.index(self.id) + 1
+            total = len(siblings)
+
+            return position, total
 
     class Meta:
         constraints = [

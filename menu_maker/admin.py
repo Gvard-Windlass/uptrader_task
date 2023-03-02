@@ -1,23 +1,37 @@
 from typing import Any
 from django.db.models import F, Max
 from django.contrib import admin
+from menu_maker.forms import MenuItemForm
 from menu_maker.models import MenuItem
 
 
 @admin.register(MenuItem)
 class MenuAdmin(admin.ModelAdmin):
-    list_display = ("name", "parent")
+    list_display = ("name", "parent", "child_position")
     search_fields = ("name", "parent__name")
     exclude = ("lft", "rgt")
+    form = MenuItemForm
 
-    def save_model(self, request: Any, obj: MenuItem, form: Any, change: Any) -> None:
+    def child_position(self, obj: MenuItem):
+        values = obj.get_position()
+        if values:
+            position, total = values
+            return f"{position}/{total}"
+
+    def save_model(
+        self, request: Any, obj: MenuItem, form: MenuItemForm, change: Any
+    ) -> None:
+        if form.is_valid():
+            position = form.cleaned_data["position"]
+
         if not obj.id:  # create
             if obj.parent:  # new node
                 descendants = MenuItem.objects.get_descendants(
                     obj.parent_id, direct_only=True
                 )
-                # TODO make dynamic
-                position = len(descendants)
+
+                if position == -1 or position > len(descendants):
+                    position = len(descendants)
 
                 # no children or insert as first child
                 if position == 0 or not descendants:
@@ -56,8 +70,9 @@ class MenuAdmin(admin.ModelAdmin):
                 target_descendants = MenuItem.objects.get_descendants(
                     obj.parent_id, direct_only=True
                 )
-                # TODO: make dynamic
-                position = len(target_descendants)
+
+                if position == -1 or position > len(target_descendants):
+                    position = len(target_descendants)
 
                 # target has no children or insert as first child
                 if position == 0 or not target_descendants:
