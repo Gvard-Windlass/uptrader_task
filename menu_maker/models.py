@@ -65,11 +65,23 @@ class MenuItem(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:  # create
             if self.parent:  # new node
-                self._create_new_child_node()
+                try:
+                    self._create_new_child_node()
+                except Exception as err:
+                    print("Error when creating new child node:", err)
+                    raise
+                finally:
+                    self._position_updater = None
             else:  # new root
-                boundary = MenuItem.objects.aggregate(Max("rgt"))["rgt__max"] or 0
-                self.lft = boundary + 1
-                self.rgt = boundary + 2
+                try:
+                    boundary = MenuItem.objects.aggregate(Max("rgt"))["rgt__max"] or 0
+                    self.lft = boundary + 1
+                    self.rgt = boundary + 2
+                except Exception as err:
+                    print("Error when creating new root node:", err)
+                    raise
+                finally:
+                    self._position_updater = None
         else:  # update
             old_obj = MenuItem.objects.get(id=self.id)
             old_pos = old_obj.get_position()
@@ -80,7 +92,18 @@ class MenuItem(models.Model):
                 and self._position_updater
                 and old_pos[0] != self._position_updater
             ):
-                self._update_node_position()
+                try:
+                    self._update_node_position()
+                except Exception as err:
+                    operation = (
+                        "moving under new parent"
+                        if self.parent_id != old_obj.parent_id
+                        else "changing order amoung siblings"
+                    )
+                    print(f"Error when {operation}", err)
+                    raise
+                finally:
+                    self._position_updater = None
 
         self._position_updater = None
         return super().save(*args, **kwargs)
