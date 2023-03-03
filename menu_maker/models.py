@@ -94,22 +94,35 @@ class MenuItem(models.Model):
         return super().delete(*args, **kwargs)
 
     def get_position(self) -> Optional[Tuple[int, int]]:
-        """returns position of this node among siblings and total siblings count, or none if root node"""
+        """returns human-readable position (starting from 1) of this node among siblings
+        and total siblings count, or none if root node"""
         if self.parent:
             siblings = list(
                 MenuItem.objects.get_descendants(self.parent_id, True).values_list(
                     "id", flat=True
                 )
             )
+            # increase position by 1 to make tuple human-readable
             position = siblings.index(self.id) + 1
             total = len(siblings)
 
             return position, total
 
-    def set_new_position(self, position: int):
-        if position < -1:
+    def set_new_position(self, index: int):
+        """Sets 0-based node position amoung siblings. Position is checked upon .save() call.
+        If parent remains the same, changes order amoung siblings,
+        otherwise appends to new a parent at specified index.
+
+        Args:
+            index (int): if index == -1 or index > number of siblings,
+            insrets as last child, otherwise at specified index
+
+        Raises:
+            ValueError: if index < -1
+        """
+        if index < -1:
             raise ValueError("position should not be less than -1")
-        self._position_updater = position
+        self._position_updater = index
 
     def _create_new_child_node(self):
         descendants = MenuItem.objects.get_descendants(self.parent_id, direct_only=True)
