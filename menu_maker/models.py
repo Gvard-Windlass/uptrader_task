@@ -2,21 +2,22 @@ from typing import Optional, Tuple, Union
 from django.db import models
 from django.db.models import CheckConstraint, Q, F, Max
 from django.shortcuts import get_object_or_404
+from django.utils.safestring import SafeString
 
 
 class MenuManager(models.Manager):
-    def get_tree(self, root: Union[int, str]):
+    def get_tree(self, root: Union[int, str, SafeString]):
         """retrives tree with root and all descendants
         Args:
-            root (Union[int, str]): id or name of root node
+            root (Union[int, str, SafeString]): id or name of root node
         """
         if type(root) == int:
             q = Q(id=root)
-        elif type(root) == str:
+        elif type(root) == str or type(root) == SafeString:
             q = Q(name=root)
         else:
             raise TypeError(
-                "root argument should be either int for id or str for name lookup"
+                "root argument should be either int for id or str|SafeString for name lookup"
             )
 
         root = get_object_or_404(MenuItem, q)

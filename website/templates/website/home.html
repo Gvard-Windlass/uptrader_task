@@ -1,0 +1,23 @@
+{% load draw_menu %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uptrader menu-maker</title>
+</head>
+<body>
+    {% if menu_item %}
+        <h1>Current menu: {{ menu_item.name }}</h1>
+    {% else %}
+        <h1>Current menu: none (home)</h1>
+    {% endif %}
+    {% draw_menu 'Clothing' %}
+    <style>
+        .submenu-hidden {
+            display: none;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<ul class="menu-maker">
+    {% for node in menu_nodes %}
+        <li class="menu-item {% if node.is_active %} active {% endif %}">
+        {% if node.is_parent %}
+            <span>></span>
+        {% endif %}
+            {% with menu_name|lower as menu_url %}
+                <a href="{% url menu_url node.item.id %}">{{ node.item.name }}</a>
+            {% endwith %}
+        </li>
+        {% if node.is_last_child and not node.is_parent %}
+            </ul>
+        {% endif %}
+        {% if node.is_parent %}
+            <ul class="menu submenu {% if node.hidden %} submenu-hidden  {% endif %}">
+        {% endif %}
+    {% endfor %}
+</ul></ul>
