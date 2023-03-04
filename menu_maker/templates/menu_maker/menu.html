@@ -5,7 +5,7 @@
             <span>></span>
         {% endif %}
             {% with menu_name|lower as menu_url %}
-                <a href="{% url menu_url node.item.id %}">{{ node.item.name }}</a>
+                <a href="{% url menu_url node.item.slug %}">{{ node.item.name }}</a>
             {% endwith %}
         </li>
         {% if node.ul_iterator %}

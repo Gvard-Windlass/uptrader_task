@@ -2,6 +2,7 @@ from typing import Optional, Tuple, Union
 from django.db import models
 from django.db.models import CheckConstraint, Q, F, Max
 from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import slugify
 from django.utils.safestring import SafeString
 
 
@@ -14,7 +15,7 @@ class MenuManager(models.Manager):
         if type(root) == int:
             q = Q(id=root)
         elif type(root) == str or type(root) == SafeString:
-            q = Q(name=root)
+            q = Q(name=root) | Q(slug=root)
         else:
             raise TypeError(
                 "root argument should be either int for id or str|SafeString for name lookup"
@@ -42,6 +43,7 @@ class MenuItem(models.Model):
     lft = models.PositiveIntegerField(null=False)
     rgt = models.PositiveIntegerField(null=False)
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
+    slug = models.SlugField(blank=True)
     objects = MenuManager()
 
     class Meta:
@@ -64,6 +66,9 @@ class MenuItem(models.Model):
         return f"{self.name}"
 
     def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+
         if not self.id:  # create
             if self.parent:  # new node
                 try:

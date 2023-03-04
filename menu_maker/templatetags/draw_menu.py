@@ -27,7 +27,7 @@ def _tree_to_nodes(menu_items: QuerySet) -> Dict[int, Node]:
     return menu_dict
 
 
-def _annotate_nodes(menu_dict: Dict[int, Node], active_id: int):
+def _annotate_nodes(menu_dict: Dict[int, Node], active_menu: str):
     if not menu_dict:
         return
 
@@ -42,7 +42,7 @@ def _annotate_nodes(menu_dict: Dict[int, Node], active_id: int):
             if parent and node.item.rgt == parent.rgt - 1:
                 node.is_last_child = True
 
-        if node.item.id == active_id:
+        if node.item.slug == active_menu:
             node.is_active = True
             node.hidden = False
             active_item = node.item
@@ -69,10 +69,10 @@ def _annotate_nodes(menu_dict: Dict[int, Node], active_id: int):
 @register.inclusion_tag("menu_maker/menu.html", takes_context=True)
 def draw_menu(context: Dict[str, Any], menu_name: SafeString):
     request: HttpRequest = context["request"]
-    active_menu_item_id = request.resolver_match.kwargs.get("menu_item_id") or None
+    active_menu = request.resolver_match.kwargs.get("slug") or None
     menu_nodes = _tree_to_nodes(MenuItem.objects.get_tree(str(menu_name)))
 
-    _annotate_nodes(menu_nodes, active_menu_item_id)
+    _annotate_nodes(menu_nodes, active_menu)
     nodes_list = sorted(list(menu_nodes.values()), key=lambda x: x.item.lft)
 
     return {

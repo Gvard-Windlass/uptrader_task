@@ -8,7 +8,7 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        menu_key = self.kwargs.get("menu_item_id")
+        menu_key = self.kwargs.get("slug")
         if menu_key:
-            context["menu_item"] = get_object_or_404(MenuItem, pk=menu_key)
+            context["menu_item"] = get_object_or_404(MenuItem, slug=menu_key)
         return context
