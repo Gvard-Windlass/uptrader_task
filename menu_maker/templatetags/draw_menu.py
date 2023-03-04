@@ -14,6 +14,7 @@ class Node:
     hidden = True
     is_last_child = False
     is_active = False
+    ul_iterator = None
 
 
 register = template.Library()
@@ -31,7 +32,8 @@ def _annotate_nodes(menu_dict: Dict[int, Node], active_id: int):
         return
 
     active_item = None
-    for node in menu_dict.values():
+    nodes = list(menu_dict.values())
+    for i, node in enumerate(nodes):
         if node.item.rgt - node.item.lft > 1:
             node.is_parent = True
 
@@ -44,6 +46,16 @@ def _annotate_nodes(menu_dict: Dict[int, Node], active_id: int):
             node.is_active = True
             node.hidden = False
             active_item = node.item
+
+        if node.is_last_child and not node.is_parent:
+            if i < len(nodes) - 2:
+                next_lft = nodes[i + 1].item.lft
+                ul_n = next_lft - node.item.rgt - 1
+            else:
+                next_lft = nodes[0].item.rgt
+                ul_n = next_lft - node.item.rgt
+
+            node.ul_iterator = list(range(ul_n))
 
     if not active_item:
         return

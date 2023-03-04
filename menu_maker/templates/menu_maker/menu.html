@@ -8,11 +8,13 @@
                 <a href="{% url menu_url node.item.id %}">{{ node.item.name }}</a>
             {% endwith %}
         </li>
-        {% if node.is_last_child and not node.is_parent %}
+        {% if node.ul_iterator %}
+            {% for i in node.ul_iterator %}
             </ul>
+            {% endfor %}
         {% endif %}
         {% if node.is_parent %}
             <ul class="menu submenu {% if node.hidden %} submenu-hidden  {% endif %}">
         {% endif %}
     {% endfor %}
-</ul></ul>
+</ul>
