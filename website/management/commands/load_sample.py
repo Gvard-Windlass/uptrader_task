@@ -14,6 +14,16 @@ menu_data = [
     ["Blouses", 19, 20, 3],
     ["Evening Gowns", 12, 13, 7],
     ["Sun Dresses", 14, 15, 7],
+    ["Electronics", 23, 42],
+    ["Home", 24, 29, 12],
+    ["Computers", 30, 35, 12],
+    ["Portable", 36, 41, 12],
+    ["Freezers", 25, 26, 13],
+    ["Microwaves", 27, 28, 13],
+    ["PC", 31, 32, 14],
+    ["Laptops", 33, 34, 14],
+    ["Smartphones", 37, 38, 15],
+    ["Smartwatches", 39, 40, 15],
 ]
 
 
